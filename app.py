@@ -4,7 +4,7 @@ import google.generativeai as genai
 # Brain Connection (Gemini Setup)
 try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-    model = genai.GenerativeModel('gemini-pro')
+    model = genai.GenerativeModel('gemini-1.5-flash')
 except:
     st.error("API Key ki settings mein kuch gadbad hai bhai!")
 
