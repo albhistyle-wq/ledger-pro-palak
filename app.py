@@ -1,30 +1,41 @@
 import streamlit as st
+import google.generativeai as genai
 
-# Dashboard ki premium settings
+# Brain Connection (Gemini Setup)
+try:
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+    model = genai.GenerativeModel('gemini-pro')
+except:
+    st.error("API Key ki settings mein kuch gadbad hai bhai!")
+
+# Dashboard Look (CRED Theme)
 st.set_page_config(page_title="Ledger Pro", layout="centered")
-
-# Custom CSS for CRED Dark Look
 st.markdown("""
     <style>
     .main { background-color: #0e1117; color: white; }
     .stMetric { background-color: #1f2937; padding: 20px; border-radius: 15px; border-left: 5px solid #00ff41; }
-    div[data-testid="stMetricValue"] { color: #00ff41; font-weight: bold; }
+    div[data-testid="stMetricValue"] { color: #00ff41; }
     </style>
     """, unsafe_allow_html=True)
 
-# Header Section
 st.title("💰 Ledger Pro")
-st.write("Welcome, Palak Rathi. Your financial intelligence is ready.")
+st.write("Welcome, Palak Rathi. Zero effort finance tracking starts here.")
 
-# Current Balance (Placeholder based on your March data)
-st.metric(label="Total Balance (March 2026)", value="₹1,937.10")
+# Balance Metric
+st.metric(label="Current Balance (March 2026)", value="₹1,937.10")
 
-# The Magic Input Area
+# Input Section
 st.subheader("Update Your Ledger")
-user_input = st.text_area("Paste bank statement text here...", height=150, placeholder="Copy text from your bank and paste here. No manual entry needed.")
+user_input = st.text_area("Paste statement text here...", height=150)
 
 if st.button("Process & Update"):
     if user_input:
-        st.success("Data received! Connecting to Gemini Brain...")
+        with st.spinner("Gemini is thinking..."):
+            prompt = f"Analyze this bank statement text and provide a summary of total income, total expenses, and a clean table of transactions: {user_input}"
+            response = model.generate_content(prompt)
+            
+            st.markdown("### 📊 Analysis Result")
+            st.write(response.text)
+            st.balloons()
     else:
-        st.warning("Pehle kuch paste toh kar lo bhai!")
+        st.warning("Pehle text toh paste karo!")
